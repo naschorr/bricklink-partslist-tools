@@ -3,7 +3,7 @@ A collection of CLI tools for manipulating and exporting Bricklink parts lists
 
 ## Supported Operations
 ### `missing-parts`
-Searches through a PartList of potentially unowned parts, and attempts to see if you've already got those parts available in the owned parts lists. If they're available, then remove them from the unowned parts list. Think of it like a right excluding join in SQL land.
+Searches through a PartList of potentially unowned parts, and attempts to see if you've already got those parts available in the owned parts lists. If they're available, then remove them from the unowned parts list. Think of it like a right excluding join in SQL land. This is especially handy when you've made changes to an existing model and want to easily figure out exactly which parts are new.
 
 #### CLI Conditions
 - The `--missing-parts` flag is present
