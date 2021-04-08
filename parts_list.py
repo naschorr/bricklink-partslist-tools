@@ -1,5 +1,6 @@
 import csv
 import json
+from copy import deepcopy
 from pathlib import Path
 
 from part import Part
@@ -12,6 +13,7 @@ class PartsList:
 
         self._import_list(self.path)
 
+    ## Methods
 
     def _import_list(self, path: Path, csv_delimiter = ','):
         ## Safe assumptions prior to loading the .csv
@@ -33,6 +35,16 @@ class PartsList:
                 ## Index the part based on its Bricklink ID and its color, so we don't have accidental collisions
                 self.parts[part.id] = part
 
+
+    def clone(self) -> "PartsList":
+        ## Just having the PartsList return type makes pylint angry, so apparently sticking quotes around the type will work?
+
+        clone = deepcopy(self)
+        clone.path = None   # Since this new PartsList isn't derived from a file on disk
+
+        return clone
+
+    ## Export Methods
 
     def export_csv(self, target: Path):
         '''
@@ -63,27 +75,3 @@ class PartsList:
             part: Part
             for part in self.parts.values():
                 writer.writerow(part.to_simple_csv())
-
-
-    def convert_to_json(self) -> {}:
-        '''
-        Simple json export of the Parts contained in this PartsList
-        '''
-
-        parts = []
-
-        part: Part
-        for part in self.parts.values():
-            part_id = part.bl_item_no
-            color = part.color_name
-            quantity = part.qty
-
-            parts.append(
-                {
-                    'part': part_id,
-                    'color': color,
-                    'quantity': quantity
-                }
-            )
-
-        return json.dumps(parts)

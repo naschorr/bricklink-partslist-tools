@@ -22,19 +22,21 @@ def _find_missing_parts(owned_parts_lists: List[PartsList], unowned_parts_list: 
     PartsList: The unowned_parts_list with all owned parts removed from it
     '''
 
-    ## todo: return new PartsList instead of mutating unowned_parts_list
+    ## Don't mutate the unowned_parts_list
+    missing_parts = unowned_parts_list.clone()
+
     part: Part
     for parts_list in owned_parts_lists:
         for part_id, part in parts_list.parts.items():
-            if (part_id in unowned_parts_list.parts):
-                needed_part = unowned_parts_list.parts[part_id] - part
+            if (part_id in missing_parts.parts):
+                needed_part = missing_parts.parts[part_id] - part
 
                 if (needed_part == None):
-                    del unowned_parts_list.parts[part_id]
+                    del missing_parts.parts[part_id]
                 else:
-                    unowned_parts_list.parts[part_id] = needed_part
+                    missing_parts.parts[part_id] = needed_part
 
-    return unowned_parts_list
+    return missing_parts
 
 
 def _build_parts_lists(*paths: List[Path]) -> List[PartsList]:
