@@ -2,7 +2,7 @@ import click
 from pathlib import Path
 from typing import List
 
-from enums import Command, SaveFormat
+from enums import SaveFormat
 from part import Part
 from parts_list import PartsList
 
