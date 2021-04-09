@@ -6,12 +6,13 @@ from pathlib import Path
 from part import Part
 
 class PartsList:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path = None):
         self.path = path
         self.parts = {} # bricklink id -> Part instance
         self._header = None
 
-        self._import_list(self.path)
+        if (self.path != None):
+            self._import_list(self.path)
 
     ## Methods
 
