@@ -5,70 +5,7 @@ from typing import List
 from enums import SaveFormat
 from part import Part
 from parts_list import PartsList
-
-
-def _find_missing_parts(owned_parts_lists: List[PartsList], unowned_parts_list: PartsList) -> PartsList:
-    '''
-    Searches through a PartList of potentially unowned parts, and attempts to see if you've already got those parts
-        available in the owned parts lists. If they're available, then remove them from the unowned parts list. Think
-        of it like a right excluding join in SQL land.
-
-    Parameters:
-    owned_parts_lists (List[PartsList]): A list of PartsList instances representing all of the parts you'd like to
-        search over
-    unowned_parts_list (PartsList): A single PartsList instance that represents all of the parts that you need
-
-    Returns:
-    PartsList: The unowned_parts_list with all owned parts removed from it
-    '''
-
-    ## Don't mutate the unowned_parts_list
-    missing_parts = unowned_parts_list.clone()
-
-    for parts_list in owned_parts_lists:
-        part: Part
-        for part_id, part in parts_list.parts.items():
-            if (part_id in missing_parts.parts):
-                needed_part = missing_parts.parts[part_id] - part
-
-                if (needed_part == None):
-                    del missing_parts.parts[part_id]
-                else:
-                    missing_parts.parts[part_id] = needed_part
-
-    return missing_parts
-
-
-def _merge_parts_lists(*parts_lists: PartsList) -> PartsList:
-    '''
-    Combines all of the provided PartsList objects into a single one, containing all of the other's parts
-
-    Parameters:
-    parts_lists (PartsList): One more more PartList instances to be merged
-
-    Returns:
-    PartsList: A newly created PartsList instance with all of the input's parts added to it
-    '''
-
-    if len(parts_lists) == 0:
-        raise RuntimeError('Unable to merge missing parts lists!')
-    elif len(parts_lists) == 1:
-        return parts_lists[0]
-
-    merged_parts_list = PartsList()
-
-    parts_list: PartsList
-    for parts_list in parts_lists:
-        part: Part
-        for part_id, part in parts_list.parts.items():
-            if part_id in merged_parts_list.parts:
-                merged_part = merged_parts_list.parts[part_id] + part
-            else:
-                merged_part = part
-            
-            merged_parts_list.parts[part_id] = merged_part
-    
-    return merged_parts_list
+from operations import Operations
 
 
 def _build_parts_lists(*paths: List[Path]) -> List[PartsList]:
@@ -101,8 +38,9 @@ def _dump_parts_list(parts_list: PartsList):
 
 
 @click.command()
-@click.option('--missing-parts', is_flag = True, help = 'Choose to perform a check for missing parts, wherein a single unowned-parts-list is compared to one or more owned-parts-lists to find missing pieces.')
-@click.option('--merge', is_flag = True, help = 'Choose to perform merge operation, merging all given (owned and unowned) parts lists together, and saving the result as a singular PartsList .csv file.')
+@click.option('--missing-parts', is_flag = True, help = 'Compares the owned and unowned parts lists, returning a single list of all unowned parts.')
+@click.option('--merge', is_flag = True, help = 'Merges together all provided parts lists into a single one, regardless of them being owned or unowned.')
+@click.option('--intersection', is_flag = True, help = 'Intersects all provided parts lists into a single one, finding the common parts between them, regardless of them being owned or unowned.')
 @click.option('--owned-parts-list-path', '-o', type = click.Path(), multiple = True, help = 'A path to a Bricklink parts list .csv file representing parts that you own')
 @click.option('--unowned-parts-list-path', '-u', type = click.Path(), multiple = True, help = 'A path to a Bricklink parts list .csv file representing parts that you do not own')
 @click.option('--save-path', '-s', type = click.Path(), help = 'The path to export manipulated parts list data to')
@@ -110,6 +48,7 @@ def _dump_parts_list(parts_list: PartsList):
 def main(
     missing_parts: bool,
     merge: bool,
+    intersection: bool,
     owned_parts_list_path: List[Path],
     unowned_parts_list_path: List[Path],
     save_path: Path,
@@ -142,7 +81,11 @@ def main(
             unowned_parts_lists[0],
             ', '.join([str(parts_list.path) for parts_list in owned_parts_lists])
         ))
-        output_parts_list = _find_missing_parts(owned_parts_lists, unowned_parts_lists[0])
+
+        owned_parts_list = Operations.union(*owned_parts_lists)
+        unowned_parts_list = Operations.union(*unowned_parts_lists)
+
+        output_parts_list = Operations.difference(unowned_parts_list, owned_parts_list)
     elif merge:
         if (len(unowned_parts_lists) + len(owned_parts_lists) == 0):
             raise RuntimeError('No parts lists provided, thus the \'merge\' would be pointless.')
@@ -151,8 +94,18 @@ def main(
             ', '.join([str(parts_list.path) for parts_list in unowned_parts_lists]),
             ', '.join([str(parts_list.path) for parts_list in owned_parts_lists])
         ))
-        output_parts_list = _merge_parts_lists(*unowned_parts_lists, *owned_parts_lists)
-    ## elif as new commands are implemented
+
+        output_parts_list = Operations.union(*unowned_parts_lists, *owned_parts_lists)
+    elif intersection:
+        if (len(unowned_parts_lists) + len(owned_parts_lists) == 0):
+            raise RuntimeError('No parts lists provided, thus the \'intersection\' would be pointless.')
+
+        print('Performing parts list intersection using unowned parts lists at: {}, and owned parts lists at: {}'.format(
+            ', '.join([str(parts_list.path) for parts_list in unowned_parts_lists]),
+            ', '.join([str(parts_list.path) for parts_list in owned_parts_lists])
+        ))
+
+        output_parts_list = Operations.intersection(*unowned_parts_lists, *owned_parts_lists)
     else:
         raise RuntimeError('No valid command was supplied.')
 
