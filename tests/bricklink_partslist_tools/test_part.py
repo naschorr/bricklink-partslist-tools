@@ -11,6 +11,8 @@ from part import Part
 
 
 class TestPart:
+    ## Fixtures
+
     @pytest.fixture
     def one_red_two_by_four_brick_factory(self) -> Part:
         def _init_bricks():
@@ -26,6 +28,7 @@ class TestPart:
 
         return _init_bricks
 
+    ## Tests
 
     def test_sub_five_minus_one(self, five_red_two_by_four_bricks_factory, one_red_two_by_four_brick_factory):
         five_bricks: Part = five_red_two_by_four_bricks_factory()
