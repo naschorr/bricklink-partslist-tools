@@ -31,4 +31,8 @@ Merges the given owned and unowned PartsLists together, returning a single one c
 - `--owned-parts-list-path`, `-o` - A path to a Bricklink parts list .csv file representing parts that you own. Can be used multiple times.
 - `--unowned-parts-list-path`, `-u` - A path to a Bricklink parts list .csv file representing parts that you do not own. Can be used multiple times.
 - `--save-path`, `-s` - The path to export manipulated parts list data to
-- `--save-format`, `-f` - The format to export manipulated parts list data in, acceptable values include `csv` or `simple-csv`. Note that the `csv` option will output a .csv file with the same headers that were fed into it, while a `simple-csv` will output a simplified version with only the "part", "color", and "quantity" headers and values. The simpler version is suitable for uploading into a Rebrickable parts list, for example. Please note that if you do intend to import into Rebrickable, that you must set the "External Source" option to be "BrickLink", instead of the default "Rebrickable (no conversion)" option.
+- `--save-format`, `-f` - The format to export manipulated parts list data in, acceptable values include:
+    - `csv`
+    - `simple-csv`
+    
+    Note that the `csv` option will output a .csv file with the Bricklink parts list headers that were fed into it, while a `simple-csv` will output a simplified version with only the "part", "color", and "quantity" headers and values. The simpler version is suitable for uploading into a Rebrickable parts list, for example. Please note that if you do intend to import into Rebrickable, that you must set the "External Source" option to be "BrickLink", instead of the default "Rebrickable (no conversion)" option.

@@ -23,7 +23,7 @@ class Part:
         part.qty -= other.qty
         part.weight -= other.weight
 
-        ## Don't worry about tracking parts with quanity 0
+        ## Don't worry about tracking parts with quantity 0
         return part if part.qty > 0 else None
 
 
