@@ -6,6 +6,7 @@ from typing import Callable, List
 ## Lazily access classes inside the src directory (and suppress pylint errors when it can't resolve the import)
 sys.path.append(str(Path('src').absolute()))
 # pylint: disable=import-error
+from part import Part
 from parts_list import PartsList
 # pylint: enable=import-error
 
@@ -44,7 +45,7 @@ class TestPartsList:
         assert partsList.path == path
         assert len(partsList.parts) == 1    # unique parts, not total parts
         
-        imported_part: Part = partsList.parts.values()[0]
+        imported_part: Part = list(partsList.parts.values())[0]
         assert imported_part.bl_item_no == '3003'
         assert imported_part.color_name == 'Red'
         assert imported_part.qty == 1
@@ -56,11 +57,11 @@ class TestPartsList:
         path = complex_csv_path_factory()
         partsList._import_list(path)
         assert partsList.path == path
-        assert len(partsList.parts) == 82    # unique parts, not total parts
+        assert len(partsList.parts) == 83    # unique parts, not total parts
 
 
-    def test_init(self, red_2x2_and_2x4_brick_parts_list_factory):
-        path = red_2x2_and_2x4_brick_parts_list_factory()
+    def test_init(self, one_red_2x4_and_2x2_brick_csv_path_factory):
+        path = one_red_2x4_and_2x2_brick_csv_path_factory()
         partsList: PartsList = PartsList(path)
 
         assert partsList.path == path
@@ -75,7 +76,7 @@ class TestPartsList:
     
 
     def test_export_csv(self, tmp_path, red_2x2_and_2x4_brick_parts_list_factory, empty_parts_list_factory):
-        path: Path = tmp_path.mkdir() / 'test-csv.csv'
+        path: Path = tmp_path / 'test-csv.csv'
         parts_list: PartsList = red_2x2_and_2x4_brick_parts_list_factory()
 
         assert not path.exists()
@@ -84,23 +85,8 @@ class TestPartsList:
 
         assert path.exists()
 
-        empty_parts_list: PartsList = empty_parts_list_factory()
-        empty_parts_list._import_list(path)
+        exported_parts_list: PartsList = empty_parts_list_factory()
+        exported_parts_list._import_list(path)
+        exported_parts_list.path = parts_list.path  # Update the path to point to the original path, as otherwise the == check will fail
 
-        assert parts_list == empty_parts_list
-
-    
-    def test_export_simple_csv(self, tmp_path, red_2x2_and_2x4_brick_parts_list_factory, empty_parts_list_factory):
-        path: Path = tmp_path.mkdir() / 'test-simple-csv.csv'
-        parts_list: PartsList = red_2x2_and_2x4_brick_parts_list_factory()
-
-        assert not path.exists()
-
-        parts_list.export_simple_csv(path)
-
-        assert path.exists()
-
-        empty_parts_list: PartsList = empty_parts_list_factory()
-        empty_parts_list._import_list(path)
-
-        assert parts_list == empty_parts_list
+        assert parts_list == exported_parts_list

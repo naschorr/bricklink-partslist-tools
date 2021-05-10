@@ -18,6 +18,9 @@ class PartsList:
     ## Magic Methods
 
     def __eq__(self, other: "PartsList") -> bool:
+        if (other is None or not isinstance(other, PartsList)):
+            return False
+
         if (self.path != other.path):
             return False
 
@@ -59,12 +62,7 @@ class PartsList:
 
 
     def clone(self) -> "PartsList":
-        ## Just having the PartsList return type makes pylint angry, so apparently sticking quotes around the type will work?
-
-        clone = deepcopy(self)
-        clone.path = None   # Since this new PartsList isn't derived from a file on disk
-
-        return clone
+        return deepcopy(self)
 
     ## Export Methods
 
