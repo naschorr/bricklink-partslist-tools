@@ -83,7 +83,9 @@ class TestUnion:
 
 
     def test_complex_union(self, complex_parts_list_factory):
-        parts_lists: List[PartsList] = [complex_parts_list_factory()] * 2
+        parts_lists: List[PartsList] = []
+        parts_lists.append(complex_parts_list_factory())
+        parts_lists.append(complex_parts_list_factory())
 
         result: PartsList = Operations.union(*parts_lists)
 
