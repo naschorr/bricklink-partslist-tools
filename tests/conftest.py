@@ -1,8 +1,14 @@
 import pytest
+import sys
 
 from typing import Callable, Dict, List
 from pathlib import Path
 
+## Lazily access classes inside the src directory (and suppress pylint errors when it can't resolve the import)
+sys.path.append(str(Path('src').absolute()))
+# pylint: disable=import-error
+from parts_list import PartsList
+# pylint: enable=import-error
 
 class PartsListPathProvider:
     _parts_list_paths: Dict = None
@@ -31,6 +37,7 @@ class PartsListPathProvider:
         else:
             raise RuntimeError('Invalid parts list name provided')
 
+## Path Factory Fixtures
 
 @pytest.fixture
 def one_red_2x2_brick_csv_path_factory() -> Callable:
@@ -62,3 +69,28 @@ def complex_csv_path_factory() -> Callable:
         return PartsListPathProvider.get_parts_list_paths('complex_parts_list.csv')
 
     return _get_path
+
+## PartsList Factory Fixtures
+
+@pytest.fixture
+def red_2x2_and_2x4_brick_parts_list_factory(one_red_2x4_and_2x2_brick_csv_path_factory) -> Callable:
+    def _init():
+        return PartsList(one_red_2x4_and_2x2_brick_csv_path_factory())
+
+    return _init
+
+
+@pytest.fixture
+def complex_parts_list_factory(complex_csv_path_factory) -> Callable:
+    def _init():
+        return PartsList(complex_csv_path_factory())
+
+    return _init
+
+
+@pytest.fixture
+def empty_parts_list_factory() -> Callable:
+    def _init():
+        return PartsList()
+
+    return _init
