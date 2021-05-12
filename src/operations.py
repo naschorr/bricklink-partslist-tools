@@ -27,10 +27,23 @@ class Operations:
             parts_list_b
         '''
 
+        ## Ensure the parameters are valid, and provide a sensible RuntimeError if not
+        invalid_params = []
+        if (parts_list_a == None or not isinstance(parts_list_a, PartsList)):
+            invalid_params.append('parts_list_a')
+        if (parts_list_b == None or not isinstance(parts_list_b, PartsList)):
+            invalid_params.append('parts_list_b')
+
+        if (len(invalid_params) > 0):
+            text = 'Unable to perform difference with parameter{} \'{}\' not being a PartsList.'
+            text.format('s' if len(invalid_params) != 1 else '', '\', \''.join(invalid_params))
+            raise RuntimeError(text)
+
+        ## Perform the difference operation
         difference = parts_list_a.clone()
 
         part: Part
-        for part_id, part in parts_list_b.parts:
+        for part_id, part in parts_list_b.parts.items():
             if part_id in difference.parts:
                 updated_part = difference.parts[part_id] - part
 
