@@ -2,6 +2,7 @@ import csv
 import json
 from copy import deepcopy
 from pathlib import Path
+from typing import List
 
 from part import Part
 
@@ -9,10 +10,28 @@ class PartsList:
     def __init__(self, path: Path = None):
         self.path = path
         self.parts = {} # bricklink id -> Part instance
-        self._header = None
+        self._header: List[str] = None
 
         if (self.path != None):
             self._import_list(self.path)
+
+    ## Magic Methods
+
+    def __eq__(self, other: "PartsList") -> bool:
+        if (other is None or not isinstance(other, PartsList)):
+            return False
+
+        if (self.path != other.path):
+            return False
+
+        if (len(self._header) != len(other._header) or any(s != o for s, o in zip(self._header, other._header))):
+            return False
+
+        if (len(self.parts) != len(other.parts) or any(s != o for s, o in zip(self.parts, other.parts))):
+            return False
+
+        return True
+
 
     ## Methods
 
@@ -22,6 +41,11 @@ class PartsList:
         assert(not path.is_dir())
         assert(path.suffix == '.csv')
 
+        ## Clean slate
+        self.path = path
+        self.parts = {}
+
+        ## Perform the import
         with open(path) as csv_file:
             reader = csv.reader(csv_file)
             self._header = reader.__next__()
@@ -38,12 +62,7 @@ class PartsList:
 
 
     def clone(self) -> "PartsList":
-        ## Just having the PartsList return type makes pylint angry, so apparently sticking quotes around the type will work?
-
-        clone = deepcopy(self)
-        clone.path = None   # Since this new PartsList isn't derived from a file on disk
-
-        return clone
+        return deepcopy(self)
 
     ## Export Methods
 

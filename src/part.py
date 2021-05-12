@@ -18,21 +18,26 @@ class Part:
 
     ## Magic Methods
 
-    def __sub__(self, other):
+    def __sub__(self, other: "Part"):
         part = self.clone()
         part.qty -= other.qty
         part.weight -= other.weight
 
-        ## Don't worry about tracking parts with quanity 0
+        ## Don't worry about tracking parts with quantity 0
         return part if part.qty > 0 else None
 
 
-    def __add__(self, other):
+    def __add__(self, other: "Part"):
         part = self.clone()
         part.qty += other.qty
         part.weight += other.weight
 
         return part
+
+
+    def __eq__(self, other: "Part") -> bool:
+        ## Compare the relevant properties, and see if their values match up
+        return not any(getattr(self, key) != getattr(other, key) for key in self.CSV_FIELDS)
 
     ## Properties
 
@@ -74,5 +79,5 @@ class Part:
         return [self.bl_item_no, self.color_name, self.qty]
 
 
-    def clone(self):
+    def clone(self) -> "Part":
         return Part(self.to_csv())
