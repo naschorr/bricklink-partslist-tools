@@ -41,8 +41,8 @@ def _dump_parts_list(parts_list: PartsList):
 @click.option('--missing-parts', is_flag = True, help = 'Compares the owned and unowned parts lists, returning a single list of all unowned parts.')
 @click.option('--merge', is_flag = True, help = 'Merges together all provided parts lists into a single one, regardless of them being owned or unowned.')
 @click.option('--intersection', is_flag = True, help = 'Intersects all provided parts lists into a single one, finding the common parts between them, regardless of them being owned or unowned.')
-@click.option('--owned-parts-list-path', '-o', type = click.Path(), multiple = True, help = 'A path to a Bricklink parts list .csv file representing parts that you own')
-@click.option('--unowned-parts-list-path', '-u', type = click.Path(), multiple = True, help = 'A path to a Bricklink parts list .csv file representing parts that you do not own')
+@click.option('--owned-parts-list-path', '-o', type = click.Path(exists = True), multiple = True, help = 'A path to a Bricklink parts list .csv file representing parts that you own')
+@click.option('--unowned-parts-list-path', '-u', type = click.Path(exists = True), multiple = True, help = 'A path to a Bricklink parts list .csv file representing parts that you do not own')
 @click.option('--save-path', '-s', type = click.Path(), help = 'The path to export manipulated parts list data to')
 @click.option('--save-format', '-f', type = click.Choice([save_format.value for save_format in SaveFormat], case_sensitive = False), help = 'The format to export manipulated parts list data in')
 def main(
