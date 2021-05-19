@@ -37,9 +37,14 @@ class PartsList:
 
     def _import_list(self, path: Path, csv_delimiter = ','):
         ## Safe assumptions prior to loading the .csv
-        assert(path.exists())
-        assert(not path.is_dir())
-        assert(path.suffix == '.csv')
+        if (not isinstance(path, Path)):
+            raise RuntimeError('Unable to import non Path object.')
+        if (not path.exists()):
+            raise RuntimeError('Provided path doesn\'t exit.')
+        if (path.is_dir()):
+            raise RuntimeError('Provided path represents a directory, and cannot be imported.')
+        if (path.suffix != '.csv'):
+            raise RuntimeError('Provided path doesn\'t resolve to a .csv file.')
 
         ## Clean slate
         self.path = path

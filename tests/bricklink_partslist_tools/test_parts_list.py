@@ -32,40 +32,52 @@ class TestPartsList:
     ## Tests
 
     def test_empty_init(self, empty_parts_list_factory):
-        partsList: PartsList = empty_parts_list_factory()
-        assert partsList.path == None
-        assert not partsList.parts
+        parts_list: PartsList = empty_parts_list_factory()
+        assert parts_list.path == None
+        assert not parts_list.parts
 
 
     def test_import_list(self, empty_parts_list_factory, one_red_2x2_brick_csv_path_factory):
-        partsList: PartsList = empty_parts_list_factory()
+        parts_list: PartsList = empty_parts_list_factory()
 
         path = one_red_2x2_brick_csv_path_factory()
-        partsList._import_list(path)
-        assert partsList.path == path
-        assert len(partsList.parts) == 1    # unique parts, not total parts
+        parts_list._import_list(path)
+        assert parts_list.path == path
+        assert len(parts_list.parts) == 1    # unique parts, not total parts
         
-        imported_part: Part = list(partsList.parts.values())[0]
+        imported_part: Part = list(parts_list.parts.values())[0]
         assert imported_part.bl_item_no == '3003'
         assert imported_part.color_name == 'Red'
         assert imported_part.qty == 1
 
     
+    def test_import_nonexistant_list(self, empty_parts_list_factory):
+        parts_list: PartsList = empty_parts_list_factory()
+
+        runtime_error_encountered = False
+        try:
+            parts_list._import_list('/some/path/that/doesnt/exist')
+        except RuntimeError:
+            runtime_error_encountered = True
+        
+        assert runtime_error_encountered
+
+
     def test_import_list_complex(self, empty_parts_list_factory, complex_csv_path_factory):
-        partsList: PartsList = empty_parts_list_factory()
+        parts_list: PartsList = empty_parts_list_factory()
 
         path = complex_csv_path_factory()
-        partsList._import_list(path)
-        assert partsList.path == path
-        assert len(partsList.parts) == 83    # unique parts, not total parts
+        parts_list._import_list(path)
+        assert parts_list.path == path
+        assert len(parts_list.parts) == 83    # unique parts, not total parts
 
 
     def test_init(self, one_red_2x4_and_2x2_brick_csv_path_factory):
         path = one_red_2x4_and_2x2_brick_csv_path_factory()
-        partsList: PartsList = PartsList(path)
+        parts_list: PartsList = PartsList(path)
 
-        assert partsList.path == path
-        assert len(partsList.parts) == 2    # unique parts, not total parts
+        assert parts_list.path == path
+        assert len(parts_list.parts) == 2    # unique parts, not total parts
 
 
     def test_clone(self, red_2x2_and_2x4_brick_parts_list_factory):
