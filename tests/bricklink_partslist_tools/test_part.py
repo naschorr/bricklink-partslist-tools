@@ -74,6 +74,42 @@ class TestPart:
         assert five_bricks != one_brick
 
 
+    def test_enable_any_color(self, one_red_2x4_brick_factory):
+        part: Part = one_red_2x4_brick_factory();
+
+        assert part.bl_color_id == '5'
+        assert part.l_draw_color_id == '4'
+        assert part.color_name == 'Red'
+
+        part.enable_any_color();
+
+        assert part.bl_color_id == '0'
+        assert part.l_draw_color_id == '9999'
+        assert part.color_name == '(Not Applicable)'
+        ## Does part.color_category really matter?
+
+
+    def test_is_any_color(self, one_red_2x4_brick_factory):
+        part: Part = one_red_2x4_brick_factory();
+
+        assert not part.is_any_color()
+
+        part.enable_any_color();
+
+        assert part.is_any_color()
+
+
+    def test_is_color_match(self, one_red_2x4_brick_factory):
+        part: Part = one_red_2x4_brick_factory();
+
+        assert part.is_color_match('Red')
+        assert part.is_color_match('red')
+
+        assert not part.is_color_match('Vintage Red')
+        assert not part.is_color_match('Trans-Medium Reddish Violet Opal')
+        assert not part.is_color_match('Blue')
+
+
     def test_clone(self, one_red_2x4_brick_factory):
         one_brick: Part = one_red_2x4_brick_factory()
         clone: Part = one_brick.clone()

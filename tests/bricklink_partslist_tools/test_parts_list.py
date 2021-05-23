@@ -1,7 +1,7 @@
 import pytest
 import sys
 from pathlib import Path
-from typing import Callable, List
+from typing import List
 
 ## Lazily access classes inside the src directory (and suppress pylint errors when it can't resolve the import)
 sys.path.append(str(Path('src').absolute()))
@@ -12,23 +12,6 @@ from parts_list import PartsList
 
 
 class TestPartsList:
-    ## Fixtures
-
-    @pytest.fixture
-    def red_2x2_and_2x4_brick_parts_list_factory(self, one_red_2x4_and_2x2_brick_csv_path_factory) -> Callable:
-        def _init():
-            return PartsList(one_red_2x4_and_2x2_brick_csv_path_factory())
-
-        return _init
-
-
-    @pytest.fixture
-    def empty_parts_list_factory(self) -> Callable:
-        def _init():
-            return PartsList()
-
-        return _init
-
     ## Tests
 
     def test_empty_init(self, empty_parts_list_factory):
@@ -78,6 +61,45 @@ class TestPartsList:
 
         assert parts_list.path == path
         assert len(parts_list.parts) == 2    # unique parts, not total parts
+
+
+    def test_set_any_color_simple(self, red_2x2_and_2x4_brick_parts_list_factory):
+        parts_list: PartsList = red_2x2_and_2x4_brick_parts_list_factory();
+
+        parts = {}
+        part: Part
+        for part_id, part in parts_list.parts.items():
+            parts[part_id] = part
+
+        parts_list.set_any_color(['Red'])
+
+        for part in parts_list.parts.values():
+            ## All parts are red, so this is safe
+            assert part.is_any_color()
+
+        ## Make sure the parts mapping has been updated
+        for part_id, part in parts.items():
+            assert part_id not in parts_list.parts
+            assert part.id in parts_list.parts
+
+
+    def test_set_any_color_complex(self, complex_parts_list_factory):
+        parts_list: PartsList = complex_parts_list_factory();
+
+        red_parts = {}
+        part: Part
+        for part in filter(lambda part: part.color_name == 'Red', parts_list.parts.values()):
+            red_parts[part.id] = part
+
+        parts_list.set_any_color(['Red'])
+
+        for part in red_parts.values():
+            assert part.is_any_color()
+
+        ## Make sure the parts mapping has been updated
+        for part_id, part in red_parts.items():
+            assert part_id not in parts_list.parts
+            assert part.id in parts_list.parts
 
 
     def test_clone(self, red_2x2_and_2x4_brick_parts_list_factory):

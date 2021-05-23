@@ -3,7 +3,7 @@ from typing import List
 class Part:
     CSV_FIELDS = ['bl_item_no', 'element_id', 'l_draw_id', 'part_name', 'bl_color_id', 'l_draw_color_id', 'color_name', 'color_category', 'qty', 'weight']
 
-    def __init__(self, csv_line: List[str], delimiter = ','):
+    def __init__(self, csv_line: List[str]):
         ## csv_line looks like: BLItemNo,ElementId,LdrawId,PartName,BLColorId,LDrawColorId,ColorName,ColorCategory,Qty,Weight
         self._bl_item_no = csv_line[0]
         self.element_id = csv_line[1]
@@ -71,12 +71,27 @@ class Part:
 
     ## Methods
 
+    def enable_any_color(self):
+        self.bl_color_id = '0'
+        self.l_draw_color_id = '9999'
+        self.color_name = '(Not Applicable)'
+        self.color_category = '(Not Applicable)'
+
+
+    def is_any_color(self) -> bool:
+        return self.bl_color_id == '0' or self.l_draw_color_id == '9999'
+    
+
+    def is_color_match(self, color_string: str) -> bool:
+        return color_string.lower() == self.color_name.lower()
+
+
     def to_csv(self) -> List[str]:
         return [str(getattr(self, field)) for field in self.CSV_FIELDS]
 
 
     def to_simple_csv(self) -> List[str]:
-        return [self.bl_item_no, self.color_name, self.qty]
+        return [self.bl_item_no, self.l_draw_color_id, self.qty]
 
 
     def clone(self) -> "Part":
