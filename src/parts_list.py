@@ -60,10 +60,24 @@ class PartsList:
                 if (row[0] == None or row[0] == ''):
                     return
 
-                part = Part(row, delimiter = csv_delimiter)
+                part = Part(row)
 
                 ## Index the part based on its Bricklink ID and its color, so we don't have accidental collisions
                 self.parts[part.id] = part
+
+
+    def set_any_color(self, colors: List[str]):
+        part: Part
+        for part in self.parts.values():
+            ## There's definitely a way to cache colors upon init, but premature optimization is bad. Also this doesn't
+            ## have to be a super performant script, so I'm not very worried at the moment.
+            for color in colors:
+                if (part.is_color_match(color)):
+                    del self.parts[part.id]
+
+                    part.enable_any_color()
+
+                    self.parts[part.id] = part
 
 
     def clone(self) -> "PartsList":

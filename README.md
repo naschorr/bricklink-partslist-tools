@@ -28,8 +28,9 @@ Merges the given owned and unowned PartsLists together, returning a single one c
 ## Commands
 - `--missing-parts` - A flag to choose to perform a check for missing parts, wherein a single unowned-parts-list is compared to one or more owned-parts-lists to find missing pieces. See the `missing-parts` section above for more details.
 - `--merge` - A flag to choose to merge all provided `owned-parts-list-path` and `unowned-parts-list-path` parts lists together into a singular list of parts.
-- `--owned-parts-list-path`, `-o` - A path to a Bricklink parts list .csv file representing parts that you own. Can be used multiple times.
-- `--unowned-parts-list-path`, `-u` - A path to a Bricklink parts list .csv file representing parts that you do not own. Can be used multiple times.
+- `--owned-parts-list-path`, `-o` - A path to a Bricklink parts list .csv file representing parts that you own. This option can be used multiple times.
+- `--unowned-parts-list-path`, `-u` - A path to a Bricklink parts list .csv file representing parts that you do not own. This option can be used multiple times.
+- `--any-color`, `-a` - Defines a certain color in the parts list to be changed over to the `any` color recognized by Bricklink or Rebrickable, which in turns selects the cheapest available parts in any available color. For a list of all current colors, see [Rebrickable's color guide](https://rebrickable.com/colors/). Specifically, see the text in the "Bricklink" column, between the single quotes. This option can be used multiple times, for multiple colors that need to be mapped to the `any` color.
 - `--save-path`, `-s` - The path to export manipulated parts list data to
 - `--save-format`, `-f` - The format to export manipulated parts list data in, acceptable values include:
     - `csv`
