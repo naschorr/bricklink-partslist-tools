@@ -43,6 +43,7 @@ def _dump_parts_list(parts_list: PartsList):
 @click.option('--intersection', is_flag = True, help = 'Intersects all provided parts lists into a single one, finding the common parts between them, regardless of them being owned or unowned.')
 @click.option('--owned-parts-list-path', '-o', type = click.Path(exists = True), multiple = True, help = 'A path to a Bricklink parts list .csv file representing parts that you own')
 @click.option('--unowned-parts-list-path', '-u', type = click.Path(exists = True), multiple = True, help = 'A path to a Bricklink parts list .csv file representing parts that you do not own')
+@click.option('--any-color', '-a', multiple = True, help = 'Denotes that this color\'s Bricklink name, can be treated as an "Any Color" or "Not Applicable", where the cheapest color will be chosen automatically.')
 @click.option('--save-path', '-s', type = click.Path(), help = 'The path to export manipulated parts list data to')
 @click.option('--save-format', '-f', type = click.Choice([save_format.value for save_format in SaveFormat], case_sensitive = False), help = 'The format to export manipulated parts list data in')
 def main(
@@ -51,6 +52,7 @@ def main(
     intersection: bool,
     owned_parts_list_path: List[Path],
     unowned_parts_list_path: List[Path],
+    any_color: List[str],
     save_path: Path,
     save_format: str
 ):
@@ -59,6 +61,8 @@ def main(
     del owned_parts_list_path
     unowned_parts_list_paths = [Path(path) for path in unowned_parts_list_path]
     del unowned_parts_list_path
+    any_colors = any_color
+    del any_color
     save_path = Path(save_path) if save_path else None
 
     ## Ensure valid saving can happen (if desired)
@@ -113,6 +117,11 @@ def main(
     if output_parts_list == None:
         raise RuntimeError('Unable to proceed with a None \'output_parts_list\' variable.')
 
+    ## Set 'any color' for the output parts list
+    if (len(any_colors) > 0):
+        output_parts_list.set_any_color(any_colors)
+
+    ## Handy info dump
     _dump_parts_list(output_parts_list)
 
     ## Save the output PartsList for future use
