@@ -25,6 +25,19 @@ Merges the given owned and unowned PartsLists together, returning a single one c
 - The `--save-path` option specifying where you want to save the output .csv file to
 - The `--save-format` option specifying what flavor of output you'd like.
 
+### `intersection`
+Performs an intersection on all provided PartsLists, regardless of them being owned or unowned. It then returns a single PartsList containing only the parts shared between all of the input PartsLists.
+
+#### CLI Conditions
+- The `--intersection` flag is present
+- Zero or more `--owned-parts-list-path` options pointing to your part list .csv file
+- Zero or more `--unowned-parts-list-path` options pointing to your part list .csv file
+    
+    __Note:__ you need at least one valid owned and/or unowned parts list path (and ideally two or more) for the intersection to complete successfully.
+
+- The `--save-path` option specifying where you want to save the output .csv file to
+- The `--save-format` option specifying what flavor of output you'd like.
+
 ## Commands
 - `--missing-parts` - A flag to choose to perform a check for missing parts, wherein a single unowned-parts-list is compared to one or more owned-parts-lists to find missing pieces. See the `missing-parts` section above for more details.
 - `--merge` - A flag to choose to merge all provided `owned-parts-list-path` and `unowned-parts-list-path` parts lists together into a singular list of parts.
